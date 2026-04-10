@@ -1,0 +1,34 @@
+
+# Dependencies
+node_modules
+**/node_modules
+
+# CDK build output
+cdk.out
+dist
+
+# Environment files — NEVER commit these
+.env
+.env.*
+*.env
+
+# AWS credentials — NEVER commit these
+.aws
+credentials
+awscredentials
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/settings.json
+.idea
+
+# Compiled JS (we use ts-node/esbuild, never commit compiled output)
+**/*.js
+!jest.config.js
+!.eslintrc.js
+
+# Test coverage
+coverage
