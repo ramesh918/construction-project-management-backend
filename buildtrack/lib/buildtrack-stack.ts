@@ -1,6 +1,12 @@
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as path from 'path';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
 
 export class BuildTrackStack extends cdk.Stack {
@@ -21,7 +27,7 @@ export class BuildTrackStack extends cdk.Stack {
       sortKey: { name: 'SK', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.RETAIN,   // never delete data on stack destroy
-      pointInTimeRecovery: true,                        // 35-day backup window
+      pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },  // 35-day backup window
       encryption: dynamodb.TableEncryption.AWS_MANAGED,
     });
 
@@ -93,5 +99,216 @@ export class BuildTrackStack extends cdk.Stack {
       value: bucket.bucketName,
       description: 'S3 bucket name',
     });
+    // ────────────────────────────────────────────────
+    // Cognito User Pool — authentication
+    // Admin creates users (no self sign-up)
+    // Two groups: admin, user
+    // ────────────────────────────────────────────────
+    const userPool = new cognito.UserPool(this, 'BuildTrackUserPool', {
+      userPoolName: 'buildtrack-users',
+      selfSignUpEnabled: false,          // only admin creates accounts
+      signInAliases: { email: true },
+      standardAttributes: {
+        email: { required: true, mutable: true },
+        fullname: { required: false, mutable: true },
+      },
+      passwordPolicy: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: false,
+      },
+      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    const userPoolClient = new cognito.UserPoolClient(this, 'BuildTrackClient', {
+      userPool,
+      userPoolClientName: 'buildtrack-app-client',
+      authFlows: {
+        userPassword: true,   // USER_PASSWORD_AUTH — login with email + password
+        userSrp: true,   // USER_SRP_AUTH — more secure, use in mobile apps
+        adminUserPassword: true,
+      },
+      accessTokenValidity: cdk.Duration.hours(1),
+      idTokenValidity: cdk.Duration.hours(1),
+      refreshTokenValidity: cdk.Duration.days(30),
+      generateSecret: false,   // false for browser/mobile clients
+    });
+
+    // User Groups
+    new cognito.CfnUserPoolGroup(this, 'AdminGroup', {
+      userPoolId: userPool.userPoolId,
+      groupName: 'admin',
+      description: 'Full access — manage all resources',
+      precedence: 1,          // lower number = higher priority
+    });
+
+    new cognito.CfnUserPoolGroup(this, 'UserGroup', {
+      userPoolId: userPool.userPoolId,
+      groupName: 'user',
+      description: 'Field access — update progress and attendance only',
+      precedence: 2,
+    });
+
+    // Outputs
+    new cdk.CfnOutput(this, 'UserPoolId', {
+      value: userPool.userPoolId,
+      description: 'Cognito User Pool ID',
+    });
+
+    new cdk.CfnOutput(this, 'UserPoolClientId', {
+      value: userPoolClient.userPoolClientId,
+      description: 'Cognito App Client ID',
+    });
+
+    // ────────────────────────────────────────────────
+    // Shared environment — passed to every Lambda
+
+    const sharedEnv = {
+      TABLE_NAME: this.table.tableName,
+      BUCKET_NAME: bucket.bucketName,
+      USER_POOL_ID: userPool.userPoolId,
+      USER_POOL_CLIENT: userPoolClient.userPoolClientId,
+      NODE_ENV: 'production',
+    };
+
+
+    const makeLambda = (
+      name: string,
+      entry: string,
+      extraEnv?: Record<string, string>,
+    ): NodejsFunction =>
+      new NodejsFunction(this, name, {
+        functionName: `BuildTrack-${name}`,
+        runtime: lambda.Runtime.NODEJS_20_X,
+        architecture: lambda.Architecture.X86_64,    // no Docker needed for local bundling
+        entry: path.join(__dirname, '..', entry),
+        handler: 'handler',
+        timeout: cdk.Duration.seconds(30),
+        memorySize: 256,
+        environment: { ...sharedEnv, ...extraEnv },
+        bundling: {
+          minify: true,
+          sourceMap: false,
+          target: 'es2020',
+          // Do not bundle AWS SDK — provided by the Lambda runtime
+          externalModules: ['@aws-sdk/*'],
+        },
+        logGroup: new logs.LogGroup(this, `${name}LogGroup`, {
+          logGroupName: `/aws/lambda/BuildTrack-${name}`,
+          retention: logs.RetentionDays.ONE_MONTH,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+        }),
+      });
+
+    const authFn = makeLambda('AuthFn', 'services/auth-service/src/index.ts');
+    const projectsFn = makeLambda('ProjectsFn', 'services/projects-service/src/index.ts');
+    const workersFn = makeLambda('WorkersFn', 'services/workers-service/src/index.ts');
+    const materialsFn = makeLambda('MaterialsFn', 'services/materials-service/src/index.ts');
+    const progressFn = makeLambda('ProgressFn', 'services/progress-service/src/index.ts');
+    const dashboardFn = makeLambda('DashboardFn', 'services/dashboard-service/src/index.ts');
+
+    // ── DynamoDB grants ──
+    this.table.grantReadWriteData(projectsFn);
+    this.table.grantReadWriteData(workersFn);
+    this.table.grantReadWriteData(materialsFn);
+    this.table.grantReadWriteData(progressFn);
+    this.table.grantReadData(dashboardFn);          // dashboard = read only
+
+    // ── S3 grants ──
+    bucket.grantPut(projectsFn);              // upload blueprints
+    bucket.grantPut(materialsFn);             // upload purchase bills
+    bucket.grantPut(progressFn);              // upload site photos
+    bucket.grantRead(projectsFn);             // read presigned GET URLs
+    bucket.grantRead(materialsFn);
+    bucket.grantRead(progressFn);
+    bucket.grantRead(dashboardFn);
+
+    // ── Cognito grant — auth service needs to call InitiateAuth ──
+    authFn.addToRolePolicy(new cdk.aws_iam.PolicyStatement({
+      actions: ['cognito-idp:InitiateAuth', 'cognito-idp:GlobalSignOut'],
+      resources: [userPool.userPoolArn],
+    }));
+
+
+
+    // ────────────────────────────────────────────────
+    // API Gateway REST API
+    // ────────────────────────────────────────────────
+    const api = new apigateway.RestApi(this, 'BuildTrackApi', {
+      restApiName: 'buildtrack-api',
+      description: 'BuildTrack Construction Management API',
+
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: [
+          'Content-Type',
+          'Authorization',
+          'X-Amz-Date',
+          'X-Api-Key',
+        ],
+      },
+
+      deployOptions: {
+        stageName: 'v1',
+        throttlingBurstLimit: 50,    // max concurrent requests
+        throttlingRateLimit: 100,   // requests per second
+        loggingLevel: apigateway.MethodLoggingLevel.INFO,
+        metricsEnabled: true,
+        dataTraceEnabled: false, // disable in production (logs request bodies)
+      },
+    });
+
+    // Cognito Authorizer — validates JWT on every protected route
+    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'Authorizer', {
+      cognitoUserPools: [userPool],
+      authorizerName: 'buildtrack-cognito-auth',
+      identitySource: 'method.request.header.Authorization',
+      resultsCacheTtl: cdk.Duration.minutes(5), // cache auth results for 5 min
+    });
+
+
+    // Helper — attach a Lambda to an API path with Cognito auth
+    const addProtectedRoute = (routePath: string, fn: lambda.IFunction) => {
+      const resource = api.root.addResource(routePath);
+      const integration = new apigateway.LambdaIntegration(fn, {
+        allowTestInvoke: false,
+      });
+      resource.addProxy({
+        defaultIntegration: integration,
+        defaultMethodOptions: {
+          authorizer,
+          authorizationType: apigateway.AuthorizationType.COGNITO,
+        },
+        anyMethod: true,
+      });
+    };
+
+    // /auth — NO authorizer (this is the login endpoint)
+    const authResource = api.root.addResource('auth');
+    authResource.addProxy({
+      defaultIntegration: new apigateway.LambdaIntegration(authFn),
+      anyMethod: true,
+    });
+
+    // Protected routes — all require a valid JWT in the Authorization header
+    addProtectedRoute('projects', projectsFn);
+    addProtectedRoute('workers', workersFn);
+    addProtectedRoute('materials', materialsFn);
+    addProtectedRoute('progress', progressFn);
+    addProtectedRoute('dashboard', dashboardFn);
+
+
+
+    // Output the API URL
+    new cdk.CfnOutput(this, 'ApiUrl', {
+      value: api.url,
+      description: 'API Gateway base URL',
+    });
+
+
   }
 }
