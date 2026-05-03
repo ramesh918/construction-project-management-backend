@@ -253,12 +253,12 @@ export class BuildTrackStack extends cdk.Stack {
       },
 
       deployOptions: {
-        stageName: 'v1',
-        throttlingBurstLimit: 50,    // max concurrent requests
-        throttlingRateLimit: 100,   // requests per second
-        loggingLevel: apigateway.MethodLoggingLevel.INFO,
-        metricsEnabled: true,
-        dataTraceEnabled: false, // disable in production (logs request bodies)
+        stageName:            'v1',
+        throttlingBurstLimit: 50,   // max concurrent requests
+        throttlingRateLimit:  100,  // requests per second
+        metricsEnabled:       true,
+        // loggingLevel requires a CloudWatch IAM role set at the account level in
+        // API Gateway settings — skip for now, enable in Step 27 (CloudWatch & Monitoring)
       },
     });
 
