@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.7.5">
+  <diagram id="LLD-Simple" name="LLD - Detailed Explanation">
+    <mxGraphModel dx="1422" dy="762" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2200" pageHeight="1500" math="0" shadow="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" value="BUILDTRACK — Low Level Design (LLD)&#xa;What Each Part Does — In Detail (Layman Friendly)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=22;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="100" y="10" width="2000" height="55" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION A: API ROUTES                                                 -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-a-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF7FF;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="80" width="1060" height="670" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-a-title" value="SECTION A: API ROUTES — What can you do with each URL?" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#1a5276;" vertex="1" parent="1">
+          <mxGeometry x="30" y="88" width="700" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-a-sub" value="When the app sends a request, it goes to one of these addresses. Think of each route as a department in an office." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="800" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Auth Routes -->
+        <mxCell id="auth-box" value="LOGIN DEPARTMENT&#xa;Address: /auth&#xa;&#xa;POST /auth/login&#xa;  You send: email + password&#xa;  You get: VIP Pass (token)&#xa;  No pass needed to call this&#xa;&#xa;POST /auth/logout&#xa;  You send: your current VIP pass&#xa;  Your pass is cancelled immediately&#xa;&#xa;This is where you come to GET your pass." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="140" width="310" height="190" as="geometry"/>
+        </mxCell>
+
+        <!-- Projects Routes -->
+        <mxCell id="proj-box" value="PROJECTS DEPARTMENT&#xa;Address: /projects&#xa;(Admin pass needed to create or edit)&#xa;&#xa;GET /projects&#xa;  Get list of all projects&#xa;&#xa;POST /projects&#xa;  Create a new project (Admin only)&#xa;  Send: name, location, budget, dates&#xa;&#xa;GET /projects/{id}&#xa;  Get details of one specific project&#xa;&#xa;PUT /projects/{id}&#xa;  Update project (status, budget, etc.)&#xa;&#xa;POST /projects/{id}/upload-url&#xa;  Get a direct link to upload a blueprint&#xa;  File goes straight to S3 storage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="355" y="140" width="310" height="240" as="geometry"/>
+        </mxCell>
+
+        <!-- Workers Routes -->
+        <mxCell id="work-box" value="WORKERS DEPARTMENT&#xa;Address: /workers&#xa;&#xa;GET /workers&#xa;  List all workers&#xa;&#xa;POST /workers&#xa;  Add a new worker (Admin only)&#xa;  Send: name, role, phone, daily wage&#xa;&#xa;POST /workers/{id}/attendance&#xa;  Mark if worker was present today&#xa;  System auto-calculates pay:&#xa;    Present = daily wage charged&#xa;    Absent = Rs 0 charged&#xa;&#xa;GET /workers/{id}/attendance&#xa;  See attendance history for a worker" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="680" y="140" width="310" height="230" as="geometry"/>
+        </mxCell>
+
+        <!-- Materials Routes -->
+        <mxCell id="mat-box" value="MATERIALS DEPARTMENT&#xa;Address: /materials&#xa;&#xa;GET /materials&#xa;  List all materials (cement, steel etc.)&#xa;  Shows LOW STOCK alert if qty is low&#xa;&#xa;POST /materials&#xa;  Add new material type (Admin only)&#xa;  Send: name, unit, low-stock threshold&#xa;&#xa;POST /materials/{id}/purchase&#xa;  Record a purchase from a vendor&#xa;  Stock quantity increases automatically&#xa;&#xa;POST /materials/{id}/usage&#xa;  Record material used on a project&#xa;  Stock decreases automatically&#xa;  Cannot use more than you have in stock" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="345" width="310" height="240" as="geometry"/>
+        </mxCell>
+
+        <!-- Progress Routes -->
+        <mxCell id="prog-box" value="DAILY PROGRESS DEPARTMENT&#xa;Address: /progress&#xa;&#xa;POST /projects/{id}/progress&#xa;  Supervisor logs work done today&#xa;  You send:&#xa;    - What work was completed today&#xa;    - Which workers were present&#xa;    - Which materials were used&#xa;    - Site photos (upload link provided)&#xa;    - Any issues or remarks&#xa;&#xa;GET /projects/{id}/progress&#xa;  See full timeline of a project&#xa;  Day by day history of all work done" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="355" y="395" width="310" height="220" as="geometry"/>
+        </mxCell>
+
+        <!-- Dashboard Routes -->
+        <mxCell id="dash-box" value="DASHBOARD DEPARTMENT&#xa;Address: /dashboard&#xa;(Admin pass required — others blocked)&#xa;&#xa;GET /dashboard&#xa;  See the big picture summary:&#xa;    - How many active projects?&#xa;    - Total budget across all projects?&#xa;    - Total spent so far?&#xa;    - How many workers today?&#xa;    - Which materials are low on stock?&#xa;    - Monthly expenses breakdown&#xa;&#xa;Admin-only view.&#xa;Supervisors get 403 FORBIDDEN error." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="680" y="385" width="310" height="230" as="geometry"/>
+        </mxCell>
+
+        <!-- File Upload Flow Note -->
+        <mxCell id="upload-note" value="HOW FILE UPLOAD WORKS (Smart way — Lambda never touches the file):&#xa;&#xa;Normal (slow) way:  App sends file to Lambda, Lambda forwards to S3  (slow, expensive, 6MB limit)&#xa;&#xa;Our smart way:&#xa;  Step 1: App asks Lambda for a special upload link (valid for 5 minutes only)&#xa;  Step 2: Lambda asks S3 to generate a Presigned URL (a direct one-time link)&#xa;  Step 3: App uploads file DIRECTLY to S3 using that link (Lambda not involved)&#xa;  Step 4: App sends the S3 file path (key) back to Lambda to save in the database&#xa;&#xa;Result: Lambda never gets overloaded. Files can be any size. Uploads are fast and cheap." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F4FD;strokeColor=#2980B9;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="606" width="1045" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION B: DATABASE DESIGN                                            -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-b-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FFF0;strokeColor=#82b366;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="80" width="1080" height="670" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-b-title" value="SECTION B: DATABASE DESIGN — How data is stored inside DynamoDB" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#1e8449;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="88" width="750" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-b-sub" value="DynamoDB uses ONE table for all data (Single-Table Design). Think of it as one huge spreadsheet with smart labelling to organize everything." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;fontColor=#555555;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="110" width="900" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Table header -->
+        <mxCell id="db-header" value="TABLE NAME: buildtrack&#xa;&#xa;PK (Primary Key) = Main identity of the record. Like a file cabinet label. (Who is this about?)&#xa;SK (Sort Key) = Type of information in this row. (What kind of data?)&#xa;GSI1 = Extra index to quickly find all records for one Project&#xa;GSI2 = Extra index to quickly find all records for one Date" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="138" width="1050" height="95" as="geometry"/>
+        </mxCell>
+
+        <!-- Project records -->
+        <mxCell id="db-proj" value="PROJECT RECORDS&#xa;&#xa;PK = PROJECT#PRJ001    (this is about a project)&#xa;SK = PROFILE           (this row has the project details)&#xa;Data stored: name, location, budget, status, start date, end date&#xa;&#xa;PK = PROJECT#PRJ001&#xa;SK = COST#SUMMARY      (this row has cost totals)&#xa;Data stored: labour cost, material cost, total spent, remaining" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="248" width="500" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker records -->
+        <mxCell id="db-work" value="WORKER RECORDS&#xa;&#xa;PK = WORKER#WRK001     (this is about a worker)&#xa;SK = PROFILE           (basic worker details)&#xa;Data stored: name, role (Mason/Plumber etc.), phone, daily wage&#xa;&#xa;PK = WORKER#WRK001&#xa;SK = ATTENDANCE#2024-01-15   (attendance for one day)&#xa;Data stored: projectId, was present (yes/no), cost charged&#xa;GSI1PK = PROJECT#PRJ001  (allows searching all attendance for a project)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="248" width="530" height="175" as="geometry"/>
+        </mxCell>
+
+        <!-- Material records -->
+        <mxCell id="db-mat" value="MATERIAL RECORDS&#xa;&#xa;PK = MATERIAL#MAT001   (this is about a material)&#xa;SK = PROFILE           (material details)&#xa;Data stored: name, unit (kg/bag/piece), current stock, low-stock alert level&#xa;&#xa;PK = MATERIAL#MAT001&#xa;SK = PURCHASE#2024-01-10   (one purchase event)&#xa;Data stored: qty bought, price per unit, vendor name, bill file link&#xa;&#xa;PK = MATERIAL#MAT001&#xa;SK = USAGE#PRJ001#2024-01-15   (one usage event)&#xa;Data stored: quantity used, which project, who logged it" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="425" width="500" height="215" as="geometry"/>
+        </mxCell>
+
+        <!-- Progress records -->
+        <mxCell id="db-prog" value="PROGRESS LOG RECORDS&#xa;&#xa;PK = PROGRESS#PRJ001   (progress for a project)&#xa;SK = LOG#2024-01-15    (log for a specific date)&#xa;Data stored:&#xa;  workDone: 'Laid foundation on Block A'&#xa;  workersPresent: [WRK001, WRK002, WRK003]&#xa;  materialsUsed: [{cement, 50 bags}, {steel, 5 rods}]&#xa;  photoKeys: [path/to/photo1.jpg, path/to/photo2.jpg]&#xa;  remarks: 'Rain delayed work by 2 hours'&#xa;  loggedBy: supervisor-user-id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="440" width="530" height="200" as="geometry"/>
+        </mxCell>
+
+        <!-- GSI explanation -->
+        <mxCell id="db-gsi" value="WHY DO WE HAVE GSI1 AND GSI2? (Extra Search Indexes — like a book's index)&#xa;&#xa;Problem: DynamoDB can only search by PK directly. But we often need:&#xa;  'Show me ALL attendance records for PROJECT#PRJ001' — not just one worker&#xa;  'Show me ALL progress logs from 2024-01-15' — across all projects&#xa;&#xa;GSI = Global Secondary Index = an extra table of contents for the database&#xa;  GSI1 (by Project): Lets you fetch everything related to one project fast&#xa;  GSI2 (by Date): Lets you fetch everything that happened on one day fast&#xa;&#xa;Without GSI, you would have to scan the entire database (slow and expensive)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F4FD;strokeColor=#2980B9;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1110" y="655" width="1050" height="88" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION C: FILE STORAGE STRUCTURE                                    -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-c-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF8EC;strokeColor=#d79b00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="775" width="640" height="395" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-c-title" value="SECTION C: FILE STORAGE — How files are organized in S3" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#7d6608;" vertex="1" parent="1">
+          <mxGeometry x="30" y="783" width="600" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3-structure" value="BUCKET NAME: buildtrack-files-{your-aws-account-id}&#xa;(The bucket name has your account ID to make it unique worldwide)&#xa;&#xa;FOLDER STRUCTURE (like folders on your computer):&#xa;&#xa;  project-documents/&#xa;    └── {projectId}/&#xa;         └── {fileId}  ← Blueprint, contract, any project file&#xa;&#xa;  progress-photos/&#xa;    └── {projectId}/&#xa;         └── {date}/&#xa;              └── {fileId}  ← Daily site photos&#xa;         (Old photos auto-moved to cheap storage after 90 days)&#xa;&#xa;  material-bills/&#xa;    └── {materialId}/&#xa;         └── {purchaseId}  ← Purchase receipt or invoice&#xa;&#xa;  worker-documents/&#xa;    └── {workerId}/&#xa;         └── {fileId}  ← Worker ID proof (Aadhar, etc.)&#xa;&#xa;  temp/&#xa;    └── (auto-deleted after 1 day — abandoned uploads cleanup)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="30" y="812" width="610" height="345" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION D: ROLES AND PERMISSIONS                                     -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-d-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF0F0;strokeColor=#b85450;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="680" y="775" width="700" height="395" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-d-title" value="SECTION D: WHO CAN DO WHAT — Roles and Permissions" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#78281f;" vertex="1" parent="1">
+          <mxGeometry x="690" y="783" width="650" height="22" as="geometry"/>
+        </mxCell>
+
+        <!-- Admin permissions -->
+        <mxCell id="admin-perms" value="ADMIN (Manager / Owner)&#xa;&#xa;CAN DO EVERYTHING:&#xa;  - Create, edit, delete Projects&#xa;  - Add, edit Workers and set wages&#xa;  - Add Materials and set stock limits&#xa;  - Record Material purchases&#xa;  - View all Progress logs&#xa;  - See Dashboard with full cost reports&#xa;  - View budget vs actual for all projects&#xa;  - Change project status (Active, Completed)&#xa;&#xa;HOW SYSTEM KNOWS IT IS ADMIN:&#xa;The JWT token contains 'admin' group tag.&#xa;Lambda reads this tag before every action." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="690" y="812" width="320" height="260" as="geometry"/>
+        </mxCell>
+
+        <!-- Supervisor permissions -->
+        <mxCell id="sup-perms" value="SITE SUPERVISOR (Field Worker)&#xa;&#xa;CAN ONLY DO:&#xa;  - Mark Worker attendance for today&#xa;  - Log daily Progress (what work was done)&#xa;  - Upload site photos&#xa;  - Record Material usage (what was used)&#xa;&#xa;CANNOT DO:&#xa;  - Create or delete projects&#xa;  - Change budgets or costs&#xa;  - Add or remove workers&#xa;  - See the Admin Dashboard&#xa;  - Purchase materials&#xa;  - Change project status&#xa;&#xa;HOW SYSTEM KNOWS:&#xa;JWT token contains 'user' group tag.&#xa;Admin actions return 403 FORBIDDEN." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1025" y="812" width="330" height="290" as="geometry"/>
+        </mxCell>
+
+        <!-- Security note -->
+        <mxCell id="security-note" value="SECURITY RULE: Every department (Lambda) checks the token BEFORE doing anything.&#xa;If a supervisor tries to access admin-only features, they get 403 FORBIDDEN — the system blocks them automatically." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffd7d7;strokeColor=#b85450;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="690" y="1085" width="665" height="75" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION E: BUSINESS FLOW (Story)                                     -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-e-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F0FF;strokeColor=#9673a6;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="775" width="780" height="395" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-e-title" value="SECTION E: A DAY IN THE LIFE — How the system is actually used" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#4a235a;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="783" width="750" height="22" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow-story" value="SETUP (Admin does this once at the beginning):&#xa;  1. Admin logs in → Cognito gives Admin VIP Pass&#xa;  2. Admin creates Project: 'Block A Apartments, Mumbai, Budget Rs 50L'&#xa;     → Saved in DB as PROJECT#PRJ001 / PROFILE&#xa;  3. Admin adds Workers: Raju (Mason, Rs 600/day), Suresh (Labourer, Rs 400/day)&#xa;     → Saved in DB as WORKER#WRK001, WORKER#WRK002&#xa;  4. Admin adds Material: Cement (bags), low-stock alert at 20 bags&#xa;  5. Admin records purchase: 100 bags cement from ABC Traders at Rs 380/bag&#xa;     → Stock updated to 100, bill uploaded to S3&#xa;&#xa;EVERY DAY (Supervisor does this at the site):&#xa;  6. Supervisor logs in → Cognito gives Supervisor VIP Pass&#xa;  7. Supervisor marks attendance: Raju=Present (Rs 600 charged), Suresh=Absent (Rs 0)&#xa;  8. Supervisor logs today's work:&#xa;     'Laid 3 rows of brick on East Wall'&#xa;     Used: 15 bags cement (stock drops from 100 to 85 automatically)&#xa;     Uploads 4 site photos directly to S3&#xa;  9. When cement stock hits 20 bags → ALERT shows on Admin Dashboard&#xa;&#xa;END OF MONTH (Admin reviews):&#xa; 10. Admin sees Dashboard: Labour Rs 45,000 + Materials Rs 38,000 = Rs 83,000 spent&#xa; 11. Budget remaining: Rs 50L - Rs 83K = Rs 49.17L  — Project is ON TRACK" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;verticalAlign=top;spacingLeft=10;spacingTop=10;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="812" width="755" height="350" as="geometry"/>
+        </mxCell>
+
+        <!-- ===================================================================== -->
+        <!-- SECTION F: COST TRACKING                                              -->
+        <!-- ===================================================================== -->
+        <mxCell id="sec-f-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0F8FF;strokeColor=#6c8ebf;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1195" width="2160" height="265" as="geometry"/>
+        </mxCell>
+        <mxCell id="sec-f-title" value="SECTION F: AUTOMATIC COST TRACKING — How the system calculates money without any manual entry" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontStyle=1;fontColor=#1a5276;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1203" width="1400" height="22" as="geometry"/>
+        </mxCell>
+
+        <!-- Labour Cost -->
+        <mxCell id="cost-labour" value="LABOUR COST (Auto-Calculated)&#xa;&#xa;Worker daily wage = Rs 500&#xa;Worker marked Present = Rs 500 charged&#xa;Worker marked Absent = Rs 0 charged&#xa;&#xa;System adds up ALL workers' costs&#xa;for ALL days for the project.&#xa;Admin never has to do this math manually." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1233" width="310" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Material Cost -->
+        <mxCell id="cost-material" value="MATERIAL COST (Auto-Calculated)&#xa;&#xa;Each purchase is recorded:&#xa;50 bags cement x Rs 400/bag = Rs 20,000&#xa;10 rods steel x Rs 1200/rod = Rs 12,000&#xa;&#xa;System adds ALL purchases across&#xa;all vendors for a project.&#xa;Gives total material spend per project." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1233" width="310" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Budget tracking -->
+        <mxCell id="cost-budget" value="BUDGET TRACKING (Always Visible)&#xa;&#xa;Project budget set by Admin: Rs 10,00,000&#xa;&#xa;Labour cost so far:    Rs 1,50,000&#xa;Material cost so far:  Rs 2,80,000&#xa;Total spent:           Rs 4,30,000&#xa;Remaining budget:      Rs 5,70,000&#xa;Status: ON TRACK&#xa;&#xa;If spent exceeds budget: OVER BUDGET alert" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="690" y="1233" width="310" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Stock tracking -->
+        <mxCell id="cost-stock" value="MATERIAL STOCK TRACKING (Auto-Updated)&#xa;&#xa;Admin buys 100 bags cement: stock = 100&#xa;Supervisor uses 30 bags:     stock = 70&#xa;Supervisor uses 50 bags:     stock = 20&#xa;&#xa;Low stock threshold set at 25 bags.&#xa;When stock hits 20: LOW STOCK ALERT&#xa;Admin sees alert on dashboard immediately.&#xa;&#xa;System BLOCKS usage if stock = 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="1233" width="320" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Project Status -->
+        <mxCell id="cost-status" value="PROJECT STATUS FLOW&#xa;&#xa;PLANNING&#xa;  (Project created, work not started)&#xa;    arrow down&#xa;ACTIVE&#xa;  (Work is happening on site)&#xa;    arrow down&#xa;ON HOLD&#xa;  (Work paused: rain, legal issue etc.)&#xa;    arrow down&#xa;COMPLETED&#xa;  (All work done, final report ready)&#xa;&#xa;Only Admin can change project status." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1233" width="280" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Worker Roles -->
+        <mxCell id="cost-roles" value="WORKER ROLES SUPPORTED&#xa;&#xa;- Mason&#xa;  (Laying bricks, plastering)&#xa;- Carpenter&#xa;  (Wood work, shuttering)&#xa;- Plumber&#xa;  (Pipes and plumbing)&#xa;- Electrician&#xa;  (Wiring and fittings)&#xa;- Labourer&#xa;  (General work, carrying)&#xa;- Supervisor&#xa;  (Site management)&#xa;- Other&#xa;  (Any other trade)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1660" y="1233" width="250" height="205" as="geometry"/>
+        </mxCell>
+
+        <!-- Material Units -->
+        <mxCell id="cost-units" value="MATERIAL UNITS&#xa;&#xa;- kg&#xa;  (sand, aggregates)&#xa;- ton&#xa;  (bulk materials)&#xa;- bag&#xa;  (cement, plaster, lime)&#xa;- piece&#xa;  (bricks, blocks, tiles)&#xa;- litre&#xa;  (paint, chemicals, fuel)&#xa;- cubic_meter&#xa;  (concrete, water)&#xa;- square_meter&#xa;  (tiles, glass, roofing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="1930" y="1233" width="230" height="205" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.7.5">
+  <diagram id="HLD-Simple" name="HLD - Simple Explanation">
+    <mxGraphModel dx="1422" dy="762" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1800" pageHeight="1100" math="0" shadow="1">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- ===== TITLE ===== -->
+        <mxCell id="title" value="BUILDTRACK — Construction Management App&#xa;How Everything Works (Simple Overview)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=22;fontStyle=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="100" y="15" width="1600" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="subtitle" value="Think of this like a restaurant: Customers (Users) place orders (Requests), the Waiter (API Gateway) takes orders to the Kitchen (Lambda), which gets ingredients from the Pantry (Database &amp; Storage). A Security Guard (Cognito) checks who is allowed in." style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#555555;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="100" y="65" width="1600" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP NUMBERS GUIDE ===== -->
+        <mxCell id="flow-guide" value="HOW A REQUEST FLOWS (follow the numbers 1 to 6)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="20" y="98" width="500" height="22" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== SECTION: PEOPLE WHO USE THE APP ===== -->
+        <mxCell id="people-label" value="PEOPLE WHO USE THE APP" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#444444;" vertex="1" parent="1">
+          <mxGeometry x="20" y="125" width="190" height="22" as="geometry"/>
+        </mxCell>
+
+        <!-- Admin box -->
+        <mxCell id="admin" value="ADMIN&#xa;(Manager / Owner)&#xa;&#xa;Full access:&#xa;- Create projects&#xa;- Hire workers&#xa;- Buy materials&#xa;- See all reports&#xa;- View dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=center;verticalAlign=middle;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="152" width="175" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- Supervisor box -->
+        <mxCell id="supervisor" value="SITE SUPERVISOR&#xa;(Field Worker)&#xa;&#xa;Limited access:&#xa;- Mark attendance&#xa;- Log daily work&#xa;- Upload site photos&#xa;- Use materials&#xa;- Cannot change budget" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;align=center;verticalAlign=middle;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry x="20" y="335" width="175" height="160" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 1: APP ===== -->
+        <mxCell id="app-label" value="STEP 1: Open App" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="235" y="125" width="175" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="app" value="WEB / MOBILE APP&#xa;&#xa;The screen you see.&#xa;Like a website or phone app.&#xa;&#xa;- Login screen&#xa;- Project list&#xa;- Worker list&#xa;- Progress logs&#xa;- Dashboard&#xa;&#xa;(This part is not built yet —&#xa;it will call our API)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="235" y="152" width="175" height="343" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrows: Users to App -->
+        <mxCell id="e-admin-app" value="1. Opens app" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#6c8ebf;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" source="admin" target="app" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-sup-app" value="1. Opens app" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#6c8ebf;exitX=1;exitY=0.6;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" source="supervisor" target="app" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== AWS CLOUD BOUNDARY ===== -->
+        <mxCell id="aws-cloud" value="AMAZON WEB SERVICES (AWS) CLOUD — All the servers and programs live here. You do not need to buy or manage any physical computer." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#232F3E;fontSize=12;fontStyle=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;strokeWidth=3;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="450" y="100" width="1320" height="920" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 2: COGNITO (Security Gate) ===== -->
+        <mxCell id="cognito-label" value="STEP 2: Security Check" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="470" y="125" width="200" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="cognito" value="COGNITO&#xa;THE SECURITY GATE&#xa;&#xa;Like a security guard at a building.&#xa;Checks your email and password.&#xa;Gives you a VIP pass (JWT Token).&#xa;&#xa;Without a valid pass, no one&#xa;can enter the system.&#xa;&#xa;Two types of passes:&#xa;- ADMIN pass (full access)&#xa;- USER pass (limited access)&#xa;&#xa;Pass expires after 1 hour.&#xa;You get a refresh token for 30 days." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="470" y="152" width="220" height="343" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: App to Cognito -->
+        <mxCell id="e-app-cog" value="2. Email + Password" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b85450;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" source="app" target="cognito" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-cog-app" value="2. Here is your VIP pass" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b85450;dashed=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="cognito" target="app" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 3: API GATEWAY (Traffic Cop) ===== -->
+        <mxCell id="apigw-label" value="STEP 3: Traffic Controller" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="730" y="125" width="220" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="apigw" value="API GATEWAY&#xa;THE TRAFFIC CONTROLLER&#xa;&#xa;Like a receptionist at a big office.&#xa;Receives all requests from the app.&#xa;Checks the VIP pass (JWT token).&#xa;Sends each request to the right&#xa;department (Lambda function).&#xa;&#xa;Routes it handles:&#xa;/auth      - Login / Logout&#xa;/projects  - Project management&#xa;/workers   - Worker management&#xa;/materials - Material tracking&#xa;/progress  - Daily work logs&#xa;/dashboard - Reports (Admin only)&#xa;&#xa;Handles up to 100 requests/second.&#xa;Blocks anyone without a valid pass." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="730" y="152" width="240" height="343" as="geometry"/>
+        </mxCell>
+
+        <!-- Arrow: App to API GW -->
+        <mxCell id="e-app-gw" value="3. Request + VIP Pass" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#9673a6;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" source="app" target="apigw" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <!-- Cognito to API GW (token validation) -->
+        <mxCell id="e-cog-gw" value="Checks pass is real" style="edgeStyle=orthogonalEdgeStyle;fontSize=10;strokeColor=#b85450;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="cognito" target="apigw" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 4: LAMBDA FUNCTIONS ===== -->
+        <mxCell id="lambda-label" value="STEP 4: Mini-Programs (Departments) — Each handles one job. Runs only when needed. No server to maintain!" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=11;fontStyle=1;fontColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="125" width="740" height="22" as="geometry"/>
+        </mxCell>
+
+        <!-- Auth Lambda -->
+        <mxCell id="auth-fn" value="LOGIN HANDLER&#xa;&#xa;Handles login and logout.&#xa;No pass needed for this one.&#xa;(It is the place where you GET the pass)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="152" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Projects Lambda -->
+        <mxCell id="projects-fn" value="PROJECT MANAGER&#xa;&#xa;Creates and updates projects.&#xa;Tracks budget and status.&#xa;Helps upload blueprints." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="255" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Workers Lambda -->
+        <mxCell id="workers-fn" value="WORKER MANAGER&#xa;&#xa;Keeps list of all workers.&#xa;Marks daily attendance.&#xa;Auto-calculates labour cost." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="358" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Materials Lambda -->
+        <mxCell id="materials-fn" value="MATERIAL TRACKER&#xa;&#xa;Tracks cement, steel, bricks etc.&#xa;Records purchases and usage.&#xa;Alerts when stock runs low." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="461" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Progress Lambda -->
+        <mxCell id="progress-fn" value="DAILY PROGRESS LOGGER&#xa;&#xa;Records work done each day.&#xa;Uploads site photos.&#xa;Links workers and materials used." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="564" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- Dashboard Lambda -->
+        <mxCell id="dashboard-fn" value="DASHBOARD (Admin Only)&#xa;&#xa;Shows overview of all projects.&#xa;Budget vs actual spend.&#xa;Worker count, stock alerts." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="667" width="200" height="90" as="geometry"/>
+        </mxCell>
+
+        <!-- API GW to Lambda arrows -->
+        <mxCell id="e-gw-auth" value="/auth" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.15;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="auth-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-gw-proj" value="/projects" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="projects-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-gw-work" value="/workers" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.45;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="workers-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-gw-mat" value="/materials" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.6;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="materials-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-gw-prog" value="/progress" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="progress-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-gw-dash" value="/dashboard" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d6b656;exitX=1;exitY=0.9;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="apigw" target="dashboard-fn" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 5: DATABASE ===== -->
+        <mxCell id="db-label" value="STEP 5: The Database (Filing Cabinet)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="125" width="240" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="dynamo" value="DYNAMODB&#xa;THE FILING CABINET&#xa;&#xa;Stores ALL your data.&#xa;Like a super-fast digital&#xa;filing cabinet.&#xa;&#xa;What is stored here:&#xa;- All project details&#xa;- All worker records&#xa;- Daily attendance&#xa;- Material stock levels&#xa;- Daily work logs&#xa;- Budget and cost data&#xa;&#xa;Automatically backed up&#xa;every day (35 days of history).&#xa;Never loses your data.&#xa;Grows automatically as&#xa;you add more data." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="152" width="225" height="400" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 5: FILE STORAGE ===== -->
+        <mxCell id="s3-label" value="STEP 5: File Storage (Drive)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="1515" y="125" width="230" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="S3 STORAGE&#xa;THE DIGITAL DRIVE&#xa;&#xa;Like Google Drive or Dropbox.&#xa;Stores all uploaded files.&#xa;&#xa;What is stored here:&#xa;- Project blueprints&#xa;- Contracts and agreements&#xa;- Daily site photos&#xa;- Material purchase bills&#xa;- Worker ID documents&#xa;&#xa;Files are stored forever.&#xa;Old photos move to cheaper&#xa;storage after 90 days.&#xa;Temporary files auto-delete&#xa;after 1 day to save space." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1515" y="152" width="225" height="400" as="geometry"/>
+        </mxCell>
+
+        <!-- Lambda to Database arrows -->
+        <mxCell id="e-proj-db" value="5. save data" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" source="projects-fn" target="dynamo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-work-db" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" edge="1" source="workers-fn" target="dynamo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-mat-db" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.55;entryDx=0;entryDy=0;" edge="1" source="materials-fn" target="dynamo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-prog-db" value="" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#82b366;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" edge="1" source="progress-fn" target="dynamo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-dash-db" value="read only" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#82b366;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.88;entryDx=0;entryDy=0;" edge="1" source="dashboard-fn" target="dynamo" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Lambda to S3 arrows -->
+        <mxCell id="e-proj-s3" value="upload blueprints" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" edge="1" source="projects-fn" target="s3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-mat-s3" value="upload bills" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" source="materials-fn" target="s3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-prog-s3" value="upload site photos" style="edgeStyle=orthogonalEdgeStyle;fontSize=9;strokeColor=#d79b00;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.72;entryDx=0;entryDy=0;" edge="1" source="progress-fn" target="s3" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== STEP 6: CLOUDWATCH (Monitoring) ===== -->
+        <mxCell id="cw-label" value="STEP 6: Security Cameras (Monitoring)" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=11;fontStyle=1;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="595" width="480" height="22" as="geometry"/>
+        </mxCell>
+        <mxCell id="cloudwatch" value="CLOUDWATCH — THE SECURITY CAMERAS&#xa;&#xa;Silently watches everything happening in the system.&#xa;Like CCTV cameras in a store.&#xa;&#xa;- Keeps a log of every action taken (who did what, when)&#xa;- Sends an alert if something breaks or goes wrong&#xa;- Keeps logs for 30 days&#xa;- Alerts via email if costs go above budget" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="620" width="480" height="130" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== LEGEND BOX ===== -->
+        <mxCell id="legend" value="HOW TO READ THIS DIAGRAM — Follow steps 1 to 6:&#xa;&#xa;1. User opens Web or Mobile App&#xa;2. User types email + password → Cognito (Security Gate) checks and returns a VIP Pass (Token)&#xa;3. Every request goes through API Gateway (Traffic Controller) which verifies the VIP Pass&#xa;4. API Gateway sends the request to the right Lambda (Mini-Program / Department)&#xa;5. Lambda saves or reads data from DynamoDB (Filing Cabinet) and uploads files to S3 (Digital Drive)&#xa;6. CloudWatch (Security Cameras) silently logs everything and alerts on errors&#xa;&#xa;KEY RULE: Without a valid VIP Pass from Cognito, nobody can access anything (except the login page)." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E8F4FD;strokeColor=#2980B9;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="580" width="960" height="175" as="geometry"/>
+        </mxCell>
+
+        <!-- ===== CI/CD NOTE ===== -->
+        <mxCell id="cicd" value="HOW THE APP GETS DEPLOYED (Updated)&#xa;&#xa;Developer writes code on their laptop&#xa;   → Pushes to GitHub (code storage website)&#xa;   → GitHub Actions (robot) automatically builds and tests the code&#xa;   → AWS CDK (Infrastructure tool) sets up all the AWS services automatically&#xa;   → CloudFormation (AWS tool) provisions everything — database, storage, security, API&#xa;&#xa;No manual clicking in AWS console needed. One command deploys everything!" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#444444;fontSize=11;align=left;verticalAlign=middle;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="790" width="960" height="160" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
