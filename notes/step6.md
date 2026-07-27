@@ -363,3 +363,56 @@ By using this configuration:
 - ✅ **Microservices Consistency** — All 6 services use identical TypeScript settings
 - ✅ **Clean Builds** — Output goes to `dist/`, tests are excluded
 - ✅ **Developer Experience** — IDE provides full type hints for Node.js APIs
+
+---
+
+## 📦 Package Reference Guide
+
+Below is a comprehensive table of all packages used in the BuildTrack project and their purposes:
+
+| Package | Version | Type | Service(s) Used | Purpose |
+|---------|---------|------|-----------------|---------|
+| **aws-cdk** | ^2.0.0 | Dev | Root | AWS CDK CLI tool for synthesizing and deploying cloud infrastructure |
+| **aws-cdk-lib** | ^2.0.0 | Dev | Root | Core AWS CDK library with constructs for AWS resources |
+| **constructs** | ^10.0.0 | Dev | Root | Base library for composable CDK constructs |
+| **typescript** | ^5.0.0 | Dev | Root, All Services | TypeScript compiler for converting TS to JavaScript |
+| **@types/node** | ^20.0.0 | Dev | Root, All Services | TypeScript type definitions for Node.js built-in APIs |
+| **@types/jest** | ^29.0.0 | Dev | Root | TypeScript type definitions for Jest testing framework |
+| **@types/uuid** | ^9.0.0 | Dev | Projects, Workers, Materials, Progress, Dashboard | TypeScript type definitions for UUID library |
+| **ts-node** | ^10.0.0 | Dev | Root, All Services | Runtime for executing TypeScript directly without compilation |
+| **jest** | ^29.0.0 | Dev | Root | Testing framework for unit and integration tests |
+| **ts-jest** | ^29.0.0 | Dev | Root | TypeScript preprocessor for Jest |
+| **eslint** | ^8.0.0 | Dev | Root | Static code analysis tool for finding bugs and style issues |
+| **@typescript-eslint/parser** | ^6.0.0 | Dev | Root | ESLint parser that understands TypeScript syntax |
+| **@typescript-eslint/eslint-plugin** | ^6.0.0 | Dev | Root | ESLint rules specific to TypeScript |
+| **prettier** | ^3.0.0 | Dev | Root | Code formatter for consistent code style |
+| **hono** | ^4.0.0 | Production | Auth, Projects, Workers, Materials, Progress, Dashboard | Lightweight HTTP framework for building REST APIs |
+| **@hono/node-server** | ^1.0.0 | Production | Projects, Materials, Progress | Hono server adapter for Node.js environments |
+| **@aws-sdk/client-cognito-identity-provider** | ^3.0.0 | Production | Auth | AWS SDK client for Amazon Cognito (user authentication & management) |
+| **@aws-sdk/client-dynamodb** | ^3.0.0 | Production | Projects, Workers, Materials, Progress, Dashboard | AWS SDK client for DynamoDB (NoSQL database operations) |
+| **@aws-sdk/util-dynamodb** | ^3.0.0 | Production | Projects, Workers, Materials, Progress, Dashboard | Utility functions to convert between DynamoDB and JavaScript types |
+| **@aws-sdk/client-s3** | ^3.0.0 | Production | Projects, Materials, Progress | AWS SDK client for Amazon S3 (object storage) |
+| **@aws-sdk/s3-request-presigner** | ^3.0.0 | Production | Projects, Materials, Progress | Utility to generate pre-signed URLs for S3 access |
+| **uuid** | ^9.0.0 | Production | Projects, Workers, Materials, Progress, Dashboard | Library for generating unique identifiers (UUIDs/GUIDs) |
+| **zod** | ^3.0.0 | Production | Auth, Projects, Workers, Materials, Progress, Dashboard | Runtime type validation and schema definition library |
+
+### Package Category Breakdown
+
+**Infrastructure & Deployment (Root Only):**
+- `aws-cdk`, `aws-cdk-lib`, `constructs` — Define and deploy AWS resources
+
+**Development Tools:**
+- `typescript`, `ts-node`, `@types/node` — TypeScript compilation and execution
+- `jest`, `ts-jest`, `@types/jest` — Testing framework
+- `eslint`, `@typescript-eslint/*`, `prettier` — Code quality and formatting
+
+**Core Application Libraries (All Services):**
+- `hono` — Lightweight HTTP server framework
+- `zod` — Request/response validation
+- `uuid` — Unique identifier generation
+
+**AWS Integration (Service-Specific):**
+- Auth Service: Cognito for authentication
+- Projects/Materials/Progress: DynamoDB + S3 for data and file storage
+- Workers/Dashboard: DynamoDB for data querying
+- All storage services: S3 pre-signing for secure file access
