@@ -4,7 +4,8 @@
   "main": "src/index.ts",
   "scripts": {
     "build": "tsc --noEmit",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node src/local.ts"
   },
   "dependencies": {
     "hono":                           "^4.0.0",

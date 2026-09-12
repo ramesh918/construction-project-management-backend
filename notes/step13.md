@@ -27,7 +27,7 @@ Fix any TypeScript errors before proceeding. Do NOT move on if this fails.
 cdk synth
 ```
 
-This converts your CDK code into a CloudFormation template.  
+This converts your CDK code into a CloudFormation template.
 Expected output includes resources for: DynamoDB, S3, Cognito, Lambda (×6), and API Gateway — with **no errors and no warnings**.
 
 ---
@@ -38,7 +38,7 @@ Expected output includes resources for: DynamoDB, S3, Cognito, Lambda (×6), and
 cdk diff
 ```
 
-This shows every resource CDK will create. Review it before deploying.  
+This shows every resource CDK will create. Review it before deploying.
 On first deploy you will see a large list — that is normal.
 
 ---
@@ -60,6 +60,7 @@ cdk deploy
 After deployment finishes, CDK prints the stack outputs. **Save these — you need them in later steps.**
 
 Example output:
+
 ```
 BuildTrackStack.ApiUrl           = https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/v1/
 BuildTrackStack.TableName        = buildtrack
@@ -86,37 +87,37 @@ USER_POOL_CLIENT_ID=xxxxxxxxxxxxxxxxxxxxxxxxxx
 
 Open the [AWS Console](https://console.aws.amazon.com) and confirm each resource was created:
 
-| Service | What to Check |
-|---------|--------------|
-| **DynamoDB** | Tables → `buildtrack` exists, has `GSI1` and `GSI2` indexes |
-| **S3** | Buckets → `buildtrack-files-<your-account-id>` exists |
-| **Cognito** | User Pools → `buildtrack-users` exists, has `admin` and `user` groups |
-| **Lambda** | Functions → 6 functions named `BuildTrack-AuthFn`, `BuildTrack-ProjectsFn`, etc. |
-| **API Gateway** | APIs → `buildtrack-api` exists with routes: `/auth`, `/projects`, `/workers`, `/materials`, `/progress`, `/dashboard` |
+| Service               | What to Check                                                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **DynamoDB**    | Tables →`buildtrack` exists, has `GSI1` and `GSI2` indexes                                                                   |
+| **S3**          | Buckets →`buildtrack-files-<your-account-id>` exists                                                                             |
+| **Cognito**     | User Pools →`buildtrack-users` exists, has `admin` and `user` groups                                                         |
+| **Lambda**      | Functions → 6 functions named`BuildTrack-AuthFn`, `BuildTrack-ProjectsFn`, etc.                                                |
+| **API Gateway** | APIs →`buildtrack-api` exists with routes: `/auth`, `/projects`, `/workers`, `/materials`, `/progress`, `/dashboard` |
 
 ---
 
 ## Common Errors & Fixes
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `ExpiredTokenException` | AWS credentials have expired | Run `aws configure` or refresh your SSO session |
-| `Bootstrap stack not found` | CDK bootstrapping was not done | Run `cdk bootstrap` once, then `cdk deploy` again |
-| `Policy contains a statement with one or more invalid principals` | IAM role wasn't fully created yet | Wait 30 seconds and re-run `cdk deploy` |
-| `npm run build` TypeScript errors | Type errors in `buildtrack-stack.ts` | Read the error, fix the line it points to, then re-run |
-| `cdk synth` fails after adding API Gateway | Missing import or variable out of scope | Confirm `import * as apigateway` is at the top of the file |
+| Error                                                               | Cause                                   | Fix                                                         |
+| ------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------- |
+| `ExpiredTokenException`                                           | AWS credentials have expired            | Run`aws configure` or refresh your SSO session            |
+| `Bootstrap stack not found`                                       | CDK bootstrapping was not done          | Run`cdk bootstrap` once, then `cdk deploy` again        |
+| `Policy contains a statement with one or more invalid principals` | IAM role wasn't fully created yet       | Wait 30 seconds and re-run`cdk deploy`                    |
+| `npm run build` TypeScript errors                                 | Type errors in`buildtrack-stack.ts`   | Read the error, fix the line it points to, then re-run      |
+| `cdk synth` fails after adding API Gateway                        | Missing import or variable out of scope | Confirm`import * as apigateway` is at the top of the file |
 
 ---
 
 ## Key Concepts (For Reference)
 
-| Concept | What It Means |
-|---------|--------------|
-| `cdk synth` | Converts CDK TypeScript → CloudFormation JSON/YAML template (local only, nothing deployed) |
-| `cdk diff` | Compares current deployed stack against local template — shows what will change |
-| `cdk deploy` | Uploads the template to CloudFormation and creates/updates all AWS resources |
-| `CfnOutput` | Values printed at the end of deployment — your live resource IDs and URLs |
-| `.env.local` | Local file to store output values — never commit this to git |
+| Concept        | What It Means                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------- |
+| `cdk synth`  | Converts CDK TypeScript → CloudFormation JSON/YAML template (local only, nothing deployed) |
+| `cdk diff`   | Compares current deployed stack against local template — shows what will change            |
+| `cdk deploy` | Uploads the template to CloudFormation and creates/updates all AWS resources                |
+| `CfnOutput`  | Values printed at the end of deployment — your live resource IDs and URLs                  |
+| `.env.local` | Local file to store output values — never commit this to git                               |
 
 ---
 
@@ -129,8 +130,8 @@ Open the [AWS Console](https://console.aws.amazon.com) and confirm each resource
 - [ ] All 5 output values saved to `.env.local`
 - [ ] AWS Console verified: DynamoDB, S3, Cognito, 6 Lambda functions, API Gateway all exist
 
-
-
 ### something went wrong in creating resource
+
 #### Delete the rolled-back stack first
+
 aws cloudformation delete-stack --stack-name BuildTrackStack

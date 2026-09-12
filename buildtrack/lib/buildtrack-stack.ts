@@ -399,6 +399,7 @@ export class BuildTrackStack extends cdk.Stack {
     bucket.grantRead(materialsFn);            // Read receipt URLs for material records
     bucket.grantRead(progressFn);             // Read photo URLs for progress updates
     bucket.grantRead(dashboardFn);            // Read all URLs for dashboard display
+    bucket.grantDelete(projectsFn);           // Delete project documents (blueprints, permits) the admin removes
 
     // ── Cognito grant — auth service needs permission to call Cognito API ──
     // CDK doesn't have a grantInitiateAuth() shortcut, so we add a custom IAM statement
