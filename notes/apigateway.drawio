@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-08-05" agent="5.0" version="24.0.0" type="device">
+  <diagram id="diagram1" name="API Gateway Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="800" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="AWS API Gateway Architecture - BuildTrack" style="text;fontSize=20;fontStyle=1;align=center;" vertex="1" parent="1">
+          <mxGeometry x="10" y="10" width="980" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Section 1: Client and Request -->
+        <mxCell id="s1" value="Client" style="rounded=1;fillColor=#D4E6F1;strokeColor=#0066CC;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="60" width="100" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="s1" target="apigw">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- API Gateway -->
+        <mxCell id="apigw" value="API Gateway&#10;(REST API)&#10;Stage: /v1" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="200" y="60" width="120" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- CORS -->
+        <mxCell id="cors" value="CORS&#10;Allowed Origins: *&#10;Allowed Methods: ALL" style="rounded=1;fillColor=#E2EFDA;strokeColor=#52A552;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="200" y="160" width="120" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;dashed=1;" edge="1" parent="1" source="apigw" target="cors">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Cognito Authorizer -->
+        <mxCell id="cognito" value="Cognito Authorizer&#10;JWT Validation&#10;Cache TTL: 5 min" style="rounded=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="380" y="60" width="130" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="apigw" target="cognito">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Routes Header -->
+        <mxCell id="routeHdr" value="ROUTES" style="text;fontSize=12;fontStyle=1;align=center;fillColor=#E1D5E7;" vertex="1" parent="1">
+          <mxGeometry x="20" y="250" width="960" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 1: /auth (Public) -->
+        <mxCell id="route1" value="/auth/{proxy+}&#10;(PUBLIC)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="290" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda1" value="authFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="290" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route1" target="lambda1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 2: /projects -->
+        <mxCell id="route2" value="/projects/{proxy+}&#10;(JWT Auth)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="360" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda2" value="projectsFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="360" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route2" target="lambda2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 3: /workers -->
+        <mxCell id="route3" value="/workers/{proxy+}&#10;(JWT Auth)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="430" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda3" value="workersFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="430" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route3" target="lambda3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 4: /materials -->
+        <mxCell id="route4" value="/materials/{proxy+}&#10;(JWT Auth)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="500" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda4" value="materialsFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="500" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route4" target="lambda4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 5: /progress -->
+        <mxCell id="route5" value="/progress/{proxy+}&#10;(JWT Auth)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="570" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda5" value="progressFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="570" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route5" target="lambda5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Route 6: /dashboard -->
+        <mxCell id="route6" value="/dashboard/{proxy+}&#10;(JWT Auth)" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="20" y="640" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="lambda6" value="dashboardFn" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="150" y="640" width="100" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="a9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="route6" target="lambda6">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Details Section -->
+        <mxCell id="detailHdr" value="API GATEWAY DETAILS" style="text;fontSize=11;fontStyle=1;align=center;fillColor=#E1D5E7;" vertex="1" parent="1">
+          <mxGeometry x="300" y="290" width="680" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Detail 1: Throttling -->
+        <mxCell id="detail1" value="Throttling&#10;• Burst: 50 req&#10;• Rate: 100 req/sec&#10;• 429 if exceeded" style="rounded=1;fillColor=#FFE6E6;strokeColor=#B85450;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="300" y="320" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Detail 2: LambdaIntegration -->
+        <mxCell id="detail2" value="LambdaIntegration&#10;• allowTestInvoke: false&#10;• Proxy: {proxy+}&#10;• Forwards event object" style="rounded=1;fillColor=#E2EFDA;strokeColor=#52A552;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="460" y="320" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Detail 3: Stage -->
+        <mxCell id="detail3" value="Stage Versioning&#10;• stageName: 'v1'&#10;• Prefix: /v1&#10;• Version support" style="rounded=1;fillColor=#D4E6F1;strokeColor=#0066CC;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="620" y="320" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Detail 4: Monitoring -->
+        <mxCell id="detail4" value="Monitoring&#10;• metricsEnabled: true&#10;• CloudWatch logs&#10;• 4xx, 5xx errors" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="780" y="320" width="140" height="70" as="geometry"/>
+        </mxCell>
+
+        <!-- Lambda Invocation Types Header -->
+        <mxCell id="invHdr" value="LAMBDA INVOCATION TYPES" style="text;fontSize=11;fontStyle=1;align=center;fillColor=#E1D5E7;" vertex="1" parent="1">
+          <mxGeometry x="300" y="410" width="680" height="20" as="geometry"/>
+        </mxCell>
+
+        <!-- Sync -->
+        <mxCell id="inv1" value="SYNCHRONOUS&#10;(API Gateway)&#10;&#10;• Caller waits&#10;• Immediate response&#10;• Used by: REST APIs" style="rounded=1;fillColor=#D4E6F1;strokeColor=#0066CC;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="300" y="440" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Async -->
+        <mxCell id="inv2" value="ASYNCHRONOUS&#10;(Events)&#10;&#10;• Fire and forget&#10;• Auto-retries&#10;• Used by: SNS, SQS" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="460" y="440" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Stream-based -->
+        <mxCell id="inv3" value="STREAM-BASED&#10;(Polling)&#10;&#10;• Lambda polls&#10;• Batch processing&#10;• Used by: Streams" style="rounded=1;fillColor=#E2EFDA;strokeColor=#52A552;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="620" y="440" width="140" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Request Flow -->
+        <mxCell id="flowHdr" value="REQUEST FLOW (Synchronous - API Gateway)" style="text;fontSize=11;fontStyle=1;align=center;fillColor=#E1D5E7;" vertex="1" parent="1">
+          <mxGeometry x="300" y="540" width="680" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow1" value="1. Request&#10;arrives" style="rounded=1;fillColor=#D4E6F1;strokeColor=#0066CC;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="310" y="570" width="80" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow2" value="2. CORS&#10;check" style="rounded=1;fillColor=#E2EFDA;strokeColor=#52A552;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="410" y="570" width="80" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow3" value="3. Route&#10;matching" style="rounded=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="510" y="570" width="80" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow4" value="4. Cognito&#10;auth" style="rounded=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="610" y="570" width="80" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow5" value="5. Lambda&#10;invoked" style="rounded=1;fillColor=#FFE6E6;strokeColor=#B85450;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="710" y="570" width="80" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flowA1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="flow1" target="flow2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="flowA2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="flow2" target="flow3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="flowA3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="flow3" target="flow4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="flowA4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;" edge="1" parent="1" source="flow4" target="flow5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Key Concepts -->
+        <mxCell id="keyHdr" value="KEY CONCEPTS (Step 12)" style="text;fontSize=11;fontStyle=1;align=center;fillColor=#E1D5E7;" vertex="1" parent="1">
+          <mxGeometry x="300" y="640" width="680" height="20" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="key1" value="addProxy()&#10;Captures all sub-paths&#10;/projects/* → same Lambda" style="rounded=1;fillColor=#CCE5FF;strokeColor=#0066CC;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="310" y="670" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="key2" value="Cognito Cache&#10;5 min TTL&#10;Reduces auth calls" style="rounded=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="440" y="670" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="key3" value="/auth is PUBLIC&#10;No JWT required&#10;Login endpoint" style="rounded=1;fillColor=#FFE6E6;strokeColor=#B85450;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="570" y="670" width="110" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="key4" value="Protected Routes&#10;All require JWT&#10;5 Lambda functions" style="rounded=1;fillColor=#E2EFDA;strokeColor=#52A552;fontSize=8;" vertex="1" parent="1">
+          <mxGeometry x="700" y="670" width="110" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

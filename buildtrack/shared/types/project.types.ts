@@ -1,5 +1,15 @@
 export type ProjectStatus = 'Planning' | 'Active' | 'On Hold' | 'Completed';
 
+export type ProjectDocumentCategory = 'blueprint' | 'permit' | 'contract' | 'other';
+
+export interface ProjectDocument {
+  key: string; // S3 object key, e.g. project-documents/<projectId>/<uuid>-<fileName>
+  fileName: string; // original file name supplied by the uploader
+  category: ProjectDocumentCategory;
+  contentType: string;
+  uploadedAt: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -9,7 +19,7 @@ export interface Project {
   budget: number;          // in rupees/dollars
   status: ProjectStatus;
   description?: string;
-  documentKeys?: string[]; // S3 keys for blueprints/contracts
+  documents?: ProjectDocument[]; // blueprints, contracts, government permits
   createdAt: string;
   updatedAt: string;
 }
@@ -23,6 +33,7 @@ export interface ProjectCostSummary {
   budget: number;
   remaining: number;
   isOverBudget: boolean;
+  updatedAt: string;
 }
 
 export interface CreateProjectInput {
