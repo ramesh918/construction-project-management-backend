@@ -82,7 +82,7 @@ projectsRoute.get('/:id', async c => {
 projectsRoute.get('/', async c => {
   const statusFilter = c.req.query('status');
   const limit = Number(c.req.query('limit') ?? 20);
-  const cursor = c.req.query('cursor');
+  const cursor = c.req.query('lastEvaluatedKey');
   const exclusiveStartKey = cursor
     ? (JSON.parse(Buffer.from(cursor, 'base64').toString('utf-8')) as Record<string, unknown>)
     : undefined;
@@ -90,10 +90,14 @@ projectsRoute.get('/', async c => {
   const result = await dynamoClient.send(
     new ScanCommand({
       TableName: dynamoConfig.tableName(),
-      FilterExpression: statusFilter ? 'SK = :sk AND #status = :status' : 'SK = :sk',
+      FilterExpression: statusFilter
+        ? '(SK = :sk OR SK = :costSk) AND #status = :status'
+        : 'SK = :sk OR SK = :costSk',
       ExpressionAttributeNames: statusFilter ? { '#status': 'status' } : undefined,
       ExpressionAttributeValues: marshall(
-        statusFilter ? { ':sk': 'PROFILE', ':status': statusFilter } : { ':sk': 'PROFILE' },
+        statusFilter
+          ? { ':sk': 'PROFILE', ':costSk': 'COST#SUMMARY', ':status': statusFilter }
+          : { ':sk': 'PROFILE', ':costSk': 'COST#SUMMARY' },
       ),
       Limit: limit,
       ExclusiveStartKey: exclusiveStartKey as never,
