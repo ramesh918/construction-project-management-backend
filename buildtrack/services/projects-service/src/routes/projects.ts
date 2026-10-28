@@ -4,6 +4,7 @@ import {
   GetItemCommand,
   ScanCommand,
   UpdateItemCommand,
+  TransactWriteItemsCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuid } from 'uuid';
@@ -170,4 +171,37 @@ projectsRoute.patch('/:id', async c => {
   }
 
   return ok(c, unmarshall(result.Attributes!) as Project, 'Project updated');
+});
+
+projectsRoute.delete('/:id', async c => {
+  const id = c.req.param('id');
+
+  try {
+    await dynamoClient.send(
+      new TransactWriteItemsCommand({
+        TransactItems: [
+          {
+            Delete: {
+              TableName: dynamoConfig.tableName(),
+              Key: marshall(projectKey(id)),
+              ConditionExpression: 'attribute_exists(PK)',
+            },
+          },
+          {
+            Delete: {
+              TableName: dynamoConfig.tableName(),
+              Key: marshall(costSummaryKey(id)),
+            },
+          },
+        ],
+      }),
+    );
+  } catch (err: any) {
+    if (err.name === 'TransactionCanceledException') {
+      throw new AppError(404, 'Project not found');
+    }
+    throw err;
+  }
+
+  return ok(c, null, 'Project deleted');
 });
