@@ -1,5 +1,7 @@
 import { Hono } from 'hono';
+import { GetUserCommand } from '@aws-sdk/client-cognito-identity-provider';
 import { getVerifier } from '../lib/jwt';
+import { cognitoClient } from '../lib/cognito';
 import { ok, fail } from '../lib/response';
 import type { AuthContext } from '../../../../shared/types';
 
@@ -18,11 +20,16 @@ meRoute.get('/', async c => {
     const groups = (payload['cognito:groups'] as string[] | undefined) ?? [];
     const isAdmin = groups.includes('admin');
 
-    console.log('meRoute: payload', payload);
+    // Access tokens don't carry the `email` claim (only ID tokens do), and
+    // `payload.username` is the auto-generated Cognito sub — not the email —
+    // since the user pool signs users in by email alias. Look the email up
+    // from Cognito directly instead.
+    const user = await cognitoClient.send(new GetUserCommand({ AccessToken: accessToken }));
+    const email = user.UserAttributes?.find(attr => attr.Name === 'email')?.Value ?? '';
 
     const authContext: AuthContext = {
       userId: payload.sub,
-      email: (payload.username as string) ?? (payload.email as string) ?? '',
+      email,
       role: isAdmin ? 'admin' : 'user',
       isAdmin,
     };

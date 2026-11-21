@@ -4,8 +4,8 @@ import type { LambdaProxyEvent } from './lib/lambda-context';
 
 const port = Number(process.env.PORT ?? 4001);
 
-// DEV ONLY — there's no API Gateway locally to decode the Cognito access token and
-// forward its claims via event.requestContext.authorizer.claims (what requireAdmin
+// DEV ONLY — there's no API Gateway/Lambda authorizer locally to decode the Cognito
+// token and forward its claims via event.requestContext.authorizer (what requireAdmin
 // reads in Lambda). This decodes the JWT payload straight from the Authorization
 // header — no signature verification, since this code path never runs in Lambda —
 // purely so `requireAdmin` sees the same shape locally that it would in production.
@@ -22,7 +22,7 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 
 function buildFakeEvent(req: Request): LambdaProxyEvent {
   const header = req.headers.get('Authorization');
-  const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : null;
+  const token = header?.replace(/^Bearer\s+/i, '').trim() ?? null;
   const payload = token ? decodeJwtPayload(token) : null;
 
   if (!payload) {
@@ -33,11 +33,9 @@ function buildFakeEvent(req: Request): LambdaProxyEvent {
   return {
     requestContext: {
       authorizer: {
-        claims: {
-          sub: (payload.sub as string) ?? '',
-          email: payload.email as string | undefined,
-          'cognito:groups': Array.isArray(groups) ? groups.join(',') : (groups as string | undefined),
-        },
+        sub: (payload.sub as string) ?? '',
+        email: payload.email as string | undefined,
+        groups: Array.isArray(groups) ? groups.join(',') : (groups as string | undefined),
       },
     },
   };

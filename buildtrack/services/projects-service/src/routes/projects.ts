@@ -10,7 +10,7 @@ import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuid } from 'uuid';
 import { dynamoClient, dynamoConfig, projectKey, costSummaryKey } from '../lib/dynamo';
 import { createProjectSchema, updateProjectSchema } from '../schemas/project.schema';
-import { ok, fail } from '../lib/response';
+import { ok, fail,withCors } from '../lib/response';
 import { AppError } from '../lib/errors';
 import type { Project, ProjectCostSummary, PaginatedResponse } from '../../../../shared/types';
 
@@ -116,6 +116,7 @@ projectsRoute.get('/', async c => {
     count: projects.length,
     lastEvaluatedKey,
   };
+  withCors(c);
   return c.json(body);
 });
 
