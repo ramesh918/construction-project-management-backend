@@ -6,8 +6,8 @@
     "build:watch": "tsc --noEmit --watch",
     "synth": "cdk synth",
     "deploy": "cdk deploy",
-    "deploy:dev": "CDK_ENV=dev cdk deploy",
-    "deploy:prod": "CDK_ENV=prod cdk deploy",
+    "deploy:dev": "CDK_ENV=dev ALLOWED_ORIGIN=* cdk deploy",
+    "deploy:prod": "CDK_ENV=prod ALLOWED_ORIGIN=* cdk deploy",
     "diff": "cdk diff",
     "destroy": "cdk destroy"
   },

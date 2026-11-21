@@ -1,14 +1,12 @@
-export interface AuthorizerClaims {
+export interface AuthorizerContext {
   sub: string;
   email?: string;
-  'cognito:groups'?: string; // comma-separated when a user is in more than one group
+  groups?: string; // comma-separated when a user is in more than one group
 }
 
 export interface LambdaProxyEvent {
   requestContext: {
-    authorizer?: {
-      claims?: AuthorizerClaims;
-    };
+    authorizer?: AuthorizerContext;
   };
 }
 

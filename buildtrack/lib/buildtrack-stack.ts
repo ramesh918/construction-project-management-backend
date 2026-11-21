@@ -312,6 +312,9 @@ export class BuildTrackStack extends cdk.Stack {
       USER_POOL_CLIENT: userPoolClient.userPoolClientId,
       // Environment indicator — tells Lambda code whether it's running in prod/dev
       NODE_ENV: 'production',
+      // Frontend origin allowed to call the API with credentials (CORS).
+      // Set via `ALLOWED_ORIGIN=https://yourapp.com cdk deploy`.
+      ALLOWED_ORIGIN: process.env.ALLOWED_ORIGIN ?? '',
     };
 
     // ────────────────────────────────────────────────
@@ -367,6 +370,8 @@ export class BuildTrackStack extends cdk.Stack {
 
     // Authentication service — handles user login, signup, token validation
     const authFn = makeLambda('AuthFn', 'services/auth-service/src/index.ts');
+    // Authorizer — validates the Cognito token on every protected route (see below)
+    const authorizerFn = makeLambda('AuthorizerFn', 'services/auth-service/src/authorizer.ts');
     // Projects service — CRUD operations for construction projects
     const projectsFn = makeLambda('ProjectsFn', 'services/projects-service/src/index.ts');
     // Workers service — manages project team members and roles
@@ -407,7 +412,8 @@ export class BuildTrackStack extends cdk.Stack {
       // Actions — the specific AWS API calls the auth Lambda is allowed to make
       actions: [
         'cognito-idp:InitiateAuth',   // Called during login to authenticate user credentials
-        'cognito-idp:GlobalSignOut'   // Called during logout to invalidate all user sessions
+        'cognito-idp:GlobalSignOut',  // Called during logout to invalidate all user sessions
+        'cognito-idp:GetUser'         // Called by /auth/me to look up the caller's email attribute
       ],
       // Resources — which Cognito user pool can be targeted (restrict to only this pool)
       resources: [userPool.userPoolArn],
@@ -453,13 +459,18 @@ export class BuildTrackStack extends cdk.Stack {
       },
     });
 
-    // Cognito Authorizer — validates JWT on every protected route
-    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'Authorizer', {
-      // cognitoUserPools — array of Cognito User Pools to validate tokens against (must match the User Pool that signed the JWT)
-      cognitoUserPools: [userPool],
+    // Authorizer — custom Lambda authorizer (authorizerFn) validates the Cognito token
+    // on every protected route. Using a Lambda authorizer (instead of API Gateway's
+    // native CognitoUserPoolsAuthorizer) lets us accept the conventional
+    // "Authorization: Bearer <token>" format — the native authorizer treats the header
+    // as a raw JWT and rejects anything with a "Bearer " prefix, which doesn't match
+    // how most HTTP clients (and our own /auth/me route) send the token.
+    const authorizer = new apigateway.TokenAuthorizer(this, 'Authorizer', {
+      // handler — the Lambda that validates the token and returns an IAM policy
+      handler: authorizerFn,
       // authorizerName — display name for this authorizer in the AWS Console and CloudFormation
-      authorizerName: 'buildtrack-cognito-auth',
-      // identitySource — tells API Gateway where to find the JWT token in the request (the Authorization header)
+      authorizerName: 'buildtrack-bearer-auth',
+      // identitySource — tells API Gateway where to find the token in the request (the Authorization header)
       identitySource: 'method.request.header.Authorization',
       // resultsCacheTtl: 5 minutes — caches the auth decision so the same token doesn't re-validate on every request (improves performance, reduces Cognito calls)
       resultsCacheTtl: cdk.Duration.minutes(5),
@@ -474,17 +485,25 @@ export class BuildTrackStack extends cdk.Stack {
         // allowTestInvoke: false — disables the "Test" button in the AWS Console (not needed in production, reduces unnecessary invocations)
         allowTestInvoke: false,
       });
-      // addProxy — catch ALL sub-paths under this resource (e.g., /projects, /projects/123, /projects/123/costs all go to the same Lambda)
+      const methodOptions: apigateway.MethodOptions = {
+        // authorizer — use the Lambda authorizer to validate the token before invoking the Lambda
+        authorizer,
+        // authorizationType: CUSTOM — specifies that authorization is via a Lambda authorizer (not AWS_IAM or API_KEY)
+        authorizationType: apigateway.AuthorizationType.CUSTOM,
+      };
+      // ProxyResource only auto-adds its ANY method to the parent resource when the parent
+      // is the API root ('/'). For a non-root resource like /projects, addProxy() alone leaves
+      // the exact base path (e.g. POST /projects) without any method — API Gateway then falls
+      // back to trying to parse Authorization as a SigV4 signature instead of using the Cognito
+      // authorizer, producing a confusing "Invalid key=value pair... SHA-256" error. So add the
+      // ANY method on the base resource explicitly too.
+      resource.addMethod('ANY', integration, methodOptions);
+      // addProxy — catch ALL sub-paths under this resource (e.g., /projects/123, /projects/123/costs go to the same Lambda)
       resource.addProxy({
         // defaultIntegration — specifies that requests should be forwarded to our Lambda function
         defaultIntegration: integration,
         // defaultMethodOptions — applies these settings to all HTTP methods (GET, POST, PUT, DELETE, etc.)
-        defaultMethodOptions: {
-          // authorizer — use the Cognito authorizer to validate JWT tokens before invoking the Lambda
-          authorizer,
-          // authorizationType: COGNITO — specifies that authorization is via Cognito User Pool (not AWS_IAM or API_KEY)
-          authorizationType: apigateway.AuthorizationType.COGNITO,
-        },
+        defaultMethodOptions: methodOptions,
         // anyMethod: true — allows ANY HTTP method (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS) on this route
         anyMethod: true,
       });

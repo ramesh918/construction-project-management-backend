@@ -4,12 +4,13 @@ import {
   GetItemCommand,
   ScanCommand,
   UpdateItemCommand,
+  TransactWriteItemsCommand,
 } from '@aws-sdk/client-dynamodb';
 import { marshall, unmarshall } from '@aws-sdk/util-dynamodb';
 import { v4 as uuid } from 'uuid';
 import { dynamoClient, dynamoConfig, projectKey, costSummaryKey } from '../lib/dynamo';
 import { createProjectSchema, updateProjectSchema } from '../schemas/project.schema';
-import { ok, fail } from '../lib/response';
+import { ok, fail,withCors } from '../lib/response';
 import { AppError } from '../lib/errors';
 import type { Project, ProjectCostSummary, PaginatedResponse } from '../../../../shared/types';
 
@@ -115,6 +116,7 @@ projectsRoute.get('/', async c => {
     count: projects.length,
     lastEvaluatedKey,
   };
+  withCors(c);
   return c.json(body);
 });
 
@@ -170,4 +172,37 @@ projectsRoute.patch('/:id', async c => {
   }
 
   return ok(c, unmarshall(result.Attributes!) as Project, 'Project updated');
+});
+
+projectsRoute.delete('/:id', async c => {
+  const id = c.req.param('id');
+
+  try {
+    await dynamoClient.send(
+      new TransactWriteItemsCommand({
+        TransactItems: [
+          {
+            Delete: {
+              TableName: dynamoConfig.tableName(),
+              Key: marshall(projectKey(id)),
+              ConditionExpression: 'attribute_exists(PK)',
+            },
+          },
+          {
+            Delete: {
+              TableName: dynamoConfig.tableName(),
+              Key: marshall(costSummaryKey(id)),
+            },
+          },
+        ],
+      }),
+    );
+  } catch (err: any) {
+    if (err.name === 'TransactionCanceledException') {
+      throw new AppError(404, 'Project not found');
+    }
+    throw err;
+  }
+
+  return ok(c, null, 'Project deleted');
 });

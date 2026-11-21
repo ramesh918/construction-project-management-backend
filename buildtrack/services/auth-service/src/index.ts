@@ -9,7 +9,13 @@ import { fail } from './lib/response';
 
 const app = new Hono().basePath('/auth');
 
-app.get('/health', c => c.json({ status: 'ok' }));
+// CORS is handled per-response in lib/response.ts's ok()/fail() helpers
+// (every route goes through one of those). /health is the one route that
+// doesn't, since it responds directly with c.json() — set it here too.
+app.get('/health', c => {
+  c.header('Access-Control-Allow-Origin', '*');
+  return c.json({ status: 'ok' });
+});
 app.route('/login', loginRoute);
 app.route('/refresh', refreshRoute);
 app.route('/logout', logoutRoute);
