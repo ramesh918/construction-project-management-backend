@@ -1,0 +1,152 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Scratch Pad
+meta:
+  id: wrk_scratchpad
+  created: 1795270003378
+  modified: 1795270003378
+  description: ""
+collection:
+  - name: Local_ConstructionManagemntBackend
+    meta:
+      id: fld_c068b74dc0824953b0a9d32c03f0c9f3
+      created: 1795270058307
+      modified: 1795270082469
+      sortKey: -1795270058307
+      description: ""
+  - name: AWS_ConstructionManagementBackend
+    meta:
+      id: fld_09f83cf2ff4b40afa4a4fc6251cb7485
+      created: 1795270109322
+      modified: 1795270109322
+      sortKey: -1795270109322
+      description: ""
+    children:
+      - name: Auth-Services
+        meta:
+          id: fld_9b1f230d095d47e793b0070d33d724f6
+          created: 1795270499904
+          modified: 1795270499904
+          sortKey: -1795270499904
+          description: ""
+        children:
+          - url: https://5ns51ou29g.execute-api.us-east-1.amazonaws.com/v1/auth/login
+            name: Admin Login
+            meta:
+              id: req_907f000ad665423ea02069d59b78cd8d
+              created: 1795270485421
+              modified: 1795270686971
+              isPrivate: false
+              description: ""
+              sortKey: -1795270505336
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"email": "admin@buildtrack.dev",
+                	"password": "AdminPass123!"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Project-Services
+        meta:
+          id: fld_445e7fdab27e40249dbdb7e703e06006
+          created: 1795270604847
+          modified: 1795270604847
+          sortKey: -1795270604847
+          description: ""
+        children:
+          - name: Documents-Section
+            meta:
+              id: fld_75e43a086de747bb86c4d8241ce819e1
+              created: 1795270653237
+              modified: 1795270653237
+              sortKey: -1795270653237
+              description: ""
+            children:
+              - url: https://5ns51ou29g.execute-api.us-east-1.amazonaws.com/v1/projects/734f8bfb-d989-4ded-b27f-9469e1b2dce5/documents/upload-url
+                name: Request-for-presigend-url
+                meta:
+                  id: req_44289d86be464548beee426ec6dda895
+                  created: 1795270671829
+                  modified: 1795270891750
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1795270671829
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"fileName": "blueprint-v1.pdf",
+                    	"contentType": "application/pdf",
+                    	"category": "blueprint"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                  - name: "Authorization "
+                    value: Bearer {% response 'body', 'req_907f000ad665423ea02069d59b78cd8d',
+                      'b64::JC5kYXRhLmFjY2Vzc1Rva2Vu::46b', 'when-expired', 3600
+                      %}
+                    description: ""
+                    disabled: false
+                authentication:
+                  type: bearer
+                  token: YOUR_JWT_TOKEN
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{% response 'body', 'req_44289d86be464548beee426ec6dda895',
+                  'b64::JC5kYXRhLnVwbG9hZFVybA==::46b', 'never', 60 %}"
+                name: cURL Import 1
+                meta:
+                  id: req_6c85a15894ef475e8995301f167fbbc7
+                  created: 1795271319227
+                  modified: 1795271775114
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1795271319227
+                method: PUT
+                body:
+                  mimeType: application/octet-stream
+                  fileName: /Users/rameshnaidu/Downloads/report-1782875091621.md
+                headers:
+                  - name: Content-Type
+                    value: application/octet-stream
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1795270021357
+    modified: 1795270021357
+environments:
+  name: Base Environment
+  meta:
+    id: env_99d30891da4bdcebc63947a8fc17f076de878684
+    created: 1795270021302
+    modified: 1795270021302
+    isPrivate: false

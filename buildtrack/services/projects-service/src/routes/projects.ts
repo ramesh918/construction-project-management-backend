@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import {
   PutItemCommand,
-  GetItemCommand,
+  QueryCommand,
   ScanCommand,
   UpdateItemCommand,
   TransactWriteItemsCommand,
@@ -67,17 +67,25 @@ projectsRoute.get('/:id', async c => {
   const id = c.req.param('id');
 
   const result = await dynamoClient.send(
-    new GetItemCommand({
+    new QueryCommand({
       TableName: dynamoConfig.tableName(),
-      Key: marshall(projectKey(id)),
+      KeyConditionExpression: 'PK = :pk',
+      ExpressionAttributeValues: marshall({ ':pk': projectKey(id).PK }),
     }),
   );
 
-  if (!result.Item) {
+  const items = result.Items ?? [];
+  const profileItem = items.find(item => item.SK?.S === 'PROFILE');
+  const costSummaryItem = items.find(item => item.SK?.S === 'COST#SUMMARY');
+
+  if (!profileItem) {
     return fail(c, 'Project not found', 404);
   }
 
-  return ok(c, unmarshall(result.Item) as Project);
+  const project = unmarshall(profileItem) as Project;
+  const costSummary = costSummaryItem ? (unmarshall(costSummaryItem) as ProjectCostSummary) : undefined;
+
+  return ok(c, { ...project, costSummary });
 });
 
 projectsRoute.get('/', async c => {
@@ -91,14 +99,10 @@ projectsRoute.get('/', async c => {
   const result = await dynamoClient.send(
     new ScanCommand({
       TableName: dynamoConfig.tableName(),
-      FilterExpression: statusFilter
-        ? '(SK = :sk OR SK = :costSk) AND #status = :status'
-        : 'SK = :sk OR SK = :costSk',
+      FilterExpression: statusFilter ? 'SK = :sk AND #status = :status' : 'SK = :sk',
       ExpressionAttributeNames: statusFilter ? { '#status': 'status' } : undefined,
       ExpressionAttributeValues: marshall(
-        statusFilter
-          ? { ':sk': 'PROFILE', ':costSk': 'COST#SUMMARY', ':status': statusFilter }
-          : { ':sk': 'PROFILE', ':costSk': 'COST#SUMMARY' },
+        statusFilter ? { ':sk': 'PROFILE', ':status': statusFilter } : { ':sk': 'PROFILE' },
       ),
       Limit: limit,
       ExclusiveStartKey: exclusiveStartKey as never,
